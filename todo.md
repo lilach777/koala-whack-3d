@@ -1,8 +1,9 @@
-# Koala Whack 3D — Raycast Pipeline Diagnosis
+# Koala Whack 3D — Hammer Hit Bug
 
-- [x] Trace pointer-down delivery, active camera ray generation, collider hierarchy, and UI/canvas layering.
-- [x] Instrument the click path with temporary raycast/object/layer/result diagnostics.
-- [x] Correct the exact raycast-to-koala identification failure without using the hammer visual as hit logic.
-- [x] Verify collider visibility, attachment, enabled state, and runtime position over the koala.
-- [x] Test face, body, ear, beside, ground, hole, and rapid-double-click behavior.
-- [x] Remove development-only diagnostics, run type-check/build, and save the corrected checkpoint.
+- [x] Hammer pointer event, canvas coordinate conversion, active camera, and koala pick predicate trace करना।
+- [x] Root cause के अनुसार pointer layer, CSS/render scaling, collider coverage, और mesh metadata ठीक करना।
+- [x] Mouse और touch/pen primary pointerdown handling को ठीक करना।
+- [x] Koala पर hammer hit, koala के बाहर miss, rapid duplicate click, और mobile tap path verify करना।
+- [x] Shader registration और clean runtime rendering recover करना।
+- [x] Audio, score, combo, retreat, timer, HUD, और restart regressions check करना।
+- [x] Type-check/build चलाना और corrected checkpoint save करना।

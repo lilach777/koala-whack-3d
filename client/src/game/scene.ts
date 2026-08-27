@@ -10,6 +10,8 @@ import { HemisphericLight } from "@babylonjs/core/Lights/hemisphericLight";
 import { DirectionalLight } from "@babylonjs/core/Lights/directionalLight";
 import { Color3 } from "@babylonjs/core/Maths/math.color";
 import { Vector3 } from "@babylonjs/core/Maths/math.vector";
+import "@babylonjs/core/Shaders/default.vertex";
+import "@babylonjs/core/Shaders/default.fragment";
 import { createArena } from "@/game/arena";
 import { EffectsManager } from "@/game/effects";
 import { GameState, type GameSnapshot } from "@/game/gameState";
@@ -124,6 +126,9 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
   const tryHit = (clientX: number, clientY: number) => {
     if (!state.isPlaying()) return;
     const rect = canvas.getBoundingClientRect();
+    // Babylon's native picker expects on-screen CSS coordinates and applies
+    // the engine's hardware-scaling conversion internally. Do not multiply by
+    // render-buffer size here or HiDPI devices will double-scale the pointer.
     const x = clientX - rect.left;
     const y = clientY - rect.top;
     scene.pointerX = x;
@@ -144,7 +149,9 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
   };
 
   const onCanvasPointerDown = (event: PointerEvent) => {
-    if (event.button !== undefined && event.button !== 0) return;
+    // Mouse button 0 is primary; touch and pen pointers commonly report -1.
+    // Reject only non-primary mouse buttons so mobile hammer taps are valid.
+    if (event.pointerType === "mouse" && event.button !== 0) return;
     event.preventDefault();
     tryHit(event.clientX, event.clientY);
   };
