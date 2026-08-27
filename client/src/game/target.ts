@@ -37,7 +37,7 @@ export class KoalaTarget {
   readonly visibleY: number;
   phase: TargetPhase = "hidden";
   private phaseTime = 0;
-  private visibleDuration = 1.3;
+  private visibleDuration = 1.12;
   private handled = false;
   private wasHit = false;
   private readonly baseScale = 1;
@@ -111,7 +111,7 @@ export class KoalaTarget {
 
     this.phaseTime += deltaSeconds;
     if (this.phase === "rising") {
-      const duration = 0.38;
+      const duration = 0.2;
       const t = Math.min(1, this.phaseTime / duration);
       const eased = 1 - Math.pow(1 - t, 3);
       const overshoot = Math.sin(t * Math.PI) * 0.08;
@@ -132,13 +132,13 @@ export class KoalaTarget {
         return { expired: true, hitFinished: false };
       }
     } else if (this.phase === "hit") {
-      const t = Math.min(1, this.phaseTime / 0.16);
+      const t = Math.min(1, this.phaseTime / 0.13);
       this.mesh.scaling.x = this.baseScale + Math.sin(t * Math.PI) * 0.12;
       this.mesh.scaling.y = -(this.baseScale - Math.sin(t * Math.PI) * 0.11);
       this.mesh.position.z = this.z - Math.sin(t * Math.PI) * 0.18;
       if (t >= 1) this.beginRetreat(true);
     } else if (this.phase === "retreating") {
-      const duration = this.wasHit ? 0.24 : 0.22;
+      const duration = this.wasHit ? 0.18 : 0.16;
       const t = Math.min(1, this.phaseTime / duration);
       const eased = t * t;
       this.mesh.position.y = this.visibleY + (this.hiddenY - this.visibleY) * eased;

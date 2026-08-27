@@ -58,10 +58,17 @@ export class GameState {
   }
 
   getDifficulty(): Difficulty {
+    const level = this.level - 1;
     return {
-      spawnInterval: Math.max(0.48, 0.9 - (this.level - 1) * 0.07),
-      visibleDuration: Math.max(0.72, 1.28 - (this.level - 1) * 0.06),
-      maxTargets: this.level >= 4 ? 2 : 1,
+      // The cadence begins inside the requested 0.5–0.7s range and eases
+      // toward a brisk but playable late-game rhythm.
+      spawnInterval: Math.max(0.28, 0.64 - level * 0.045),
+      // Exposure starts just over one second, then settles into a 0.6–0.9s
+      // reaction window instead of becoming an instant coin-flip.
+      visibleDuration: Math.max(0.62, 1.12 - level * 0.065),
+      // A second active target arrives only after the player has established
+      // the basic loop, with scene-level probability keeping overlap fair.
+      maxTargets: this.level >= 3 ? 2 : 1,
     };
   }
 

@@ -106,6 +106,7 @@ export default function Home() {
       if (event.type === "hit") {
         audio.unlock();
         audio.playHit(event.points);
+        audio.playScore(event.points);
         setHitBanner({ key: Date.now(), points: event.points });
         window.setTimeout(() => setHitBanner(null), 520);
       }
@@ -114,9 +115,17 @@ export default function Home() {
         audio.playMiss();
         setMissKey((value) => value + 1);
       }
-      if (event.type === "mode" && event.mode === "gameover") {
+      if (event.type === "appear") {
         audio.unlock();
-        audio.playGameOver();
+        audio.playAppear();
+      }
+      if (event.type === "mode") {
+        audio.unlock();
+        if (event.mode === "playing") audio.startMusic();
+        if (event.mode === "gameover") {
+          audio.stopMusic();
+          audio.playGameOver();
+        }
       }
     });
     return () => {

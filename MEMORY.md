@@ -24,11 +24,17 @@ Pointer picks now filter exclusively for a dedicated invisible `koalaHitCollider
 
 ## Hammer cursor and pacing follow-up
 
-The visible-koala collider is now 2.02 × 2.58 × 0.66 units, covering ears, head, face, sunglasses, hoodie, and visible body while remaining narrower than the hole. It stays pickable only during the visible phase and is disabled on hit/retreat. Active gameplay renders a pointer-events-none CSS hammer overlay owned by React; the browser cursor is hidden across the active shell, the head center is aligned to the pointer, and each pointer press remounts a short swing animation. The initial spawn timer is 0.08 seconds plus a 0.38-second rise, while level-one cadence is 0.9 seconds with a 1.28-second visible window.
+The visible-koala collider is now 2.02 × 2.58 × 0.66 units, covering ears, head, face, sunglasses, hoodie, and visible body while remaining narrower than the hole. It stays pickable only during the visible phase and is disabled on hit/retreat. Active gameplay renders a pointer-events-none CSS hammer overlay owned by React; the browser cursor is hidden across the active shell, the head center is aligned to the pointer, and each pointer press remounts a 145ms swing animation. The initial spawn timer is 0.12 seconds plus a 0.2-second rise. Level-one cadence is 0.64 seconds with a 1.12-second visible window, jittered by 0.86–1.10×; the late-game floor is 0.28 seconds and 0.62 seconds respectively, with two active targets from level 3.
+
+## Gameplay polish and music update
+
+The game now uses a faster arcade curve: 200ms rise, 130ms hit recoil, 160–180ms retreat, level-one 640ms spawn cadence with slight fair jitter, 1.12s exposure, and progressively faster 280ms cadence with 620ms exposure floor. Level 3 unlocks two active targets while random hole selection continues to avoid immediate repeats. The dedicated collider and one-hit protection are unchanged.
+
+The audio manager now loads `/manus-storage/koala-whack-arcade-loop-32s_8b9e9f36.wav` after the first game gesture, loops the original 156 BPM instrumental through a music gain at 28%, and keeps SFX on a separate 82% gain. Appear pop and score ding cues are synthesized alongside the existing hit, miss, and game-over cues. The persisted mute toggle controls both channels, and music stops on game-over and restarts on replay.
 
 ## Next steps
 
-Run final type-check/build and capture desktop/mobile screenshots for the updated HUD. Verify the mute toggle manually once in a browser with sound enabled; the game remains fully playable when audio is unavailable or muted.
+The remaining maintenance check is to keep the timing values and storage URL synchronized if the difficulty curve or music asset is replaced. The game remains fully playable when audio is unavailable or muted.
 
 ## Raycast pipeline diagnosis — Aug 27, 2026
 

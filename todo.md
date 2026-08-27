@@ -7,3 +7,20 @@
 - [x] Shader registration और clean runtime rendering recover करना।
 - [x] Audio, score, combo, retreat, timer, HUD, और restart regressions check करना।
 - [x] Type-check/build चलाना और corrected checkpoint save करना।
+
+# Gameplay Polish Upgrade
+
+- [x] Inspect current timing, difficulty, target animation, and audio architecture.
+- [x] Tune emergence/retreat animation to approximately 0.15–0.25 seconds without breaking occlusion.
+- [x] Reduce exposure windows and spawn intervals with gradual, fair progression.
+- [x] Preserve exact dedicated-collider hit detection and one-hit protection.
+- [x] Verify hammer swing responsiveness for mouse, touch, and pen input.
+- [x] Generate an original royalty-safe instrumental arcade loop at approximately 140–170 BPM.
+- [x] Integrate seamless looping music with conservative volume and mute control.
+- [x] Add or refine koala-appear and score feedback sounds while preserving existing hit/miss/game-over SFX.
+- [x] Run type-check, production build, gameplay checks, and desktop/mobile visual verification.
+- [x] Save a revised checkpoint and report the completed upgrade.
+
+## Completion Notes
+
+- [x] Record the final gameplay tuning values and any audio asset/license provenance.

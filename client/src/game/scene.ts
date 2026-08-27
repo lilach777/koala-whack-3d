@@ -24,6 +24,7 @@ const GROUND_TEXTURE_URL = "/manus-storage/eucalyptus-ground-texture_d0f4d1a9.pn
 export type GameEvent =
   | { type: "hit"; x: number; y: number; z: number; points: number }
   | { type: "miss" }
+  | { type: "appear"; x: number; z: number }
   | { type: "mode"; mode: GameSnapshot["mode"] };
 
 type SnapshotListener = (snapshot: GameSnapshot) => void;
@@ -101,6 +102,7 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
     if (!target || target.isActive()) return;
     lastSpawnId = target.id;
     target.spawn(difficulty.visibleDuration);
+    emitEvent(listeners, { type: "appear", x: target.x, z: target.z });
     effects.dust(target.x, target.z);
   };
 
@@ -160,9 +162,9 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
   const start = () => {
     targets.forEach((target) => target.forceHide());
     lastSpawnId = -1;
-    // The 0.08s launch delay plus the 0.38s rise places the first visible
+    // The 0.12s launch delay plus the 0.2s rise places the first visible
     // koala inside the requested 0.3–0.5s window.
-    spawnTimer = 0.08;
+    spawnTimer = 0.12;
     state.start();
     emitModeIfChanged();
   };
@@ -182,9 +184,15 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
       if (spawnTimer <= 0) {
         const beforeCount = countActiveTargets();
         spawnTarget();
-        // Keep probing while a target is finishing its retreat so demo mode and
-        // natural play never leave a long empty gap between koalas.
-        spawnTimer = countActiveTargets() > beforeCount ? state.getDifficulty().spawnInterval : 0.14;
+        if (countActiveTargets() > beforeCount) {
+          // Small timing variation keeps the field lively without making the
+          // next appearance feel random in an unfair, unreadable way.
+          const jitter = 0.86 + Math.random() * 0.24;
+          spawnTimer = state.getDifficulty().spawnInterval * jitter;
+        } else {
+          // Probe quickly while a target is finishing its retreat.
+          spawnTimer = 0.1 + Math.random() * 0.08;
+        }
       }
     }
 
