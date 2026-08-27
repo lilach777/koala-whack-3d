@@ -40,3 +40,11 @@
 - [x] Update the audio manager to select a different track on each new round without changing SFX behavior.
 - [x] Verify lazy loading, looping, mute persistence, replay rotation, and unchanged gameplay flow.
 - [x] Save a rotation-enabled checkpoint and report the result.
+
+# Attached Game Over Audio
+
+- [x] Inspect the existing miss counter, Game Over transition, restart reset, and audio lifecycle.
+- [x] Copy and reference VN20260827_233353.mp3 exactly as provided without looping or editing its content.
+- [x] Play the MP3 only once on the exact miss #3 transition after the Game Over screen appears.
+- [x] Keep misses #1 and #2 silent, prevent replay while Game Over remains visible, and reset playback eligibility on PLAY AGAIN.
+- [x] Verify the complete three-miss → Game Over → one-time audio flow and save a checkpoint.

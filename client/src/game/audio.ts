@@ -9,6 +9,8 @@
 type AudioListener = (muted: boolean) => void;
 type AudioContextConstructor = typeof AudioContext;
 
+const GAME_OVER_SOUND_URL = "/manus-storage/VN20260827_233353_e3326c82.mp3";
+
 const MUSIC_URLS = [
   "/manus-storage/koala-whack-engagement-loop-32s_50bcff19.wav",
   "/manus-storage/koala-whack-alt-gumleaf-32s_8873fbd1.wav",
@@ -31,6 +33,8 @@ export class ArcadeAudio {
   private readonly musicBuffers = new Map<string, AudioBuffer>();
   private readonly musicLoads = new Map<string, Promise<void>>();
   private musicSource: AudioBufferSourceNode | null = null;
+  private gameOverSound: HTMLAudioElement | null = null;
+  private gameOverPlayed = false;
   private musicRequested = false;
   private requestedMusicUrl: string | null = null;
   private nextTrackIndex = 0;
@@ -54,6 +58,7 @@ export class ArcadeAudio {
   }
 
   startMusic() {
+    this.resetGameOverSound();
     this.musicRequested = true;
     this.requestedMusicUrl = MUSIC_URLS[this.nextTrackIndex % MUSIC_URLS.length];
     this.nextTrackIndex = (this.nextTrackIndex + 1) % MUSIC_URLS.length;
@@ -65,6 +70,28 @@ export class ArcadeAudio {
     this.musicRequested = false;
     this.requestedMusicUrl = null;
     this.stopCurrentMusicSource();
+  }
+
+  playGameOverOnce() {
+    if (this.gameOverPlayed || this.muted || typeof Audio === "undefined") return;
+    this.gameOverPlayed = true;
+    const sound = this.gameOverSound ?? new Audio(GAME_OVER_SOUND_URL);
+    this.gameOverSound = sound;
+    sound.preload = "auto";
+    sound.loop = false;
+    sound.currentTime = 0;
+    sound.volume = 1;
+    void sound.play().catch(() => {
+      // Browser autoplay policy may block playback; never retry on this screen.
+    });
+  }
+
+  resetGameOverSound() {
+    this.gameOverPlayed = false;
+    if (this.gameOverSound) {
+      this.gameOverSound.pause();
+      this.gameOverSound.currentTime = 0;
+    }
   }
 
   setMuted(muted: boolean) {
@@ -133,6 +160,8 @@ export class ArcadeAudio {
 
   dispose() {
     this.stopMusic();
+    this.resetGameOverSound();
+    this.gameOverSound = null;
     if (this.context) void this.context.close();
     this.context = null;
     this.master = null;

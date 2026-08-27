@@ -23,9 +23,9 @@ const GROUND_TEXTURE_URL = "/manus-storage/eucalyptus-ground-texture_d0f4d1a9.pn
 
 export type GameEvent =
   | { type: "hit"; x: number; y: number; z: number; points: number }
-  | { type: "miss" }
+  | { type: "miss"; misses: number; maxMisses: number }
   | { type: "appear"; x: number; z: number }
-  | { type: "mode"; mode: GameSnapshot["mode"] };
+  | { type: "mode"; mode: GameSnapshot["mode"]; misses: number; maxMisses: number };
 
 type SnapshotListener = (snapshot: GameSnapshot) => void;
 type EventListener = (event: GameEvent) => void;
@@ -84,7 +84,8 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
     const mode = state.getSnapshot().mode;
     if (mode !== lastMode) {
       lastMode = mode;
-      emitEvent(listeners, { type: "mode", mode });
+      const snapshot = state.getSnapshot();
+      emitEvent(listeners, { type: "mode", mode, misses: snapshot.misses, maxMisses: snapshot.maxMisses });
     }
   };
 
@@ -138,7 +139,9 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
 
     // No fallback or distance test: only the dedicated visible koala collider can
     // score. Ground, rims, holes, empty space, and unrelated meshes are misses.
-    emitEvent(listeners, { type: "miss" });
+    state.registerMiss();
+    const snapshot = state.getSnapshot();
+    emitEvent(listeners, { type: "miss", misses: snapshot.misses, maxMisses: snapshot.maxMisses });
   };
 
   const onCanvasPointerDown = (event: PointerEvent) => {
@@ -201,7 +204,8 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
       if (result.expired) {
         state.registerMiss();
         effects.dust(target.x, target.z);
-        emitEvent(listeners, { type: "miss" });
+        const snapshot = state.getSnapshot();
+        emitEvent(listeners, { type: "miss", misses: snapshot.misses, maxMisses: snapshot.maxMisses });
       }
     });
     state.setActiveTargets(countActiveTargets());

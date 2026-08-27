@@ -13,6 +13,7 @@
 | `koala-whack-arcade-loop.wav` | Looping background music, rotation track 1 | `/manus-storage/koala-whack-engagement-loop-32s_50bcff19.wav` | Original 158 BPM royalty-safe instrumental arcade loop with frequent small rhythmic variations; 32s PCM WAV for seamless looping. |
 | `koala-whack-alt-gumleaf.wav` | Looping background music, rotation track 2 | `/manus-storage/koala-whack-alt-gumleaf-32s_8873fbd1.wav` | Original 146 BPM warm, bouncy gumleaf-grove loop; 32s PCM WAV. |
 | `koala-whack-alt-sapling.wav` | Looping background music, rotation track 3 | `/manus-storage/koala-whack-alt-sapling-32s_3ecdc972.wav` | Original 168 BPM punchier later-round loop; PCM WAV prepared for rotation. |
+| `VN20260827_233353.mp3` | Exclusive one-shot Game Over sound | `/manus-storage/VN20260827_233353_e3326c82.mp3` | User-provided MP3 copied byte-for-byte; never used as background music or looped. |
 
 ## Runtime asset rules
 

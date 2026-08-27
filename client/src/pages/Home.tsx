@@ -111,8 +111,8 @@ export default function Home() {
         window.setTimeout(() => setHitBanner(null), 520);
       }
       if (event.type === "miss") {
-        audio.unlock();
-        audio.playMiss();
+        // Misses one and two are intentionally silent. The attached MP3 is
+        // reserved exclusively for the exact third-miss Game Over transition.
         setMissKey((value) => value + 1);
       }
       if (event.type === "appear") {
@@ -121,10 +121,13 @@ export default function Home() {
       }
       if (event.type === "mode") {
         audio.unlock();
-        if (event.mode === "playing") audio.startMusic();
+        if (event.mode === "playing") {
+          audio.resetGameOverSound();
+          audio.startMusic();
+        }
         if (event.mode === "gameover") {
           audio.stopMusic();
-          audio.playGameOver();
+          if (event.misses === event.maxMisses) audio.playGameOverOnce();
         }
       }
     });
@@ -136,10 +139,12 @@ export default function Home() {
 
   const startGame = () => {
     audio.unlock();
+    audio.resetGameOverSound();
     handle?.start();
   };
   const restartGame = () => {
     audio.unlock();
+    audio.resetGameOverSound();
     handle?.restart();
   };
   const toggleMute = () => {
