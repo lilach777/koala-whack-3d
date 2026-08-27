@@ -55,3 +55,10 @@
 - [x] Existing mobile-safe canvas configuration already satisfies this requirement; no gameplay, visual, scoring, or audio source changes were needed.
 - [x] Verify touch play, mobile Game Over audio, and unchanged desktop behavior.
 - [x] Existing published checkpoint remains mobile-compatible; no runtime checkpoint changes were required.
+
+# Mobile Field Framing Fix
+
+- [x] Inspect the mobile camera framing and identify why the side holes and koala are clipped.
+- [x] Apply only a mobile-specific camera/composition adjustment; preserve the desktop camera and behavior.
+- [x] Verify the complete 3×3 field is visible and the koala can be tapped on a phone viewport.
+- [x] Verify desktop framing remains unchanged and save the corrected checkpoint.

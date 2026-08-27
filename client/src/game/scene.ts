@@ -5,6 +5,7 @@
 
 import { Engine } from "@babylonjs/core/Engines/engine";
 import { Scene } from "@babylonjs/core/scene";
+import { Camera } from "@babylonjs/core/Cameras/camera";
 import { FreeCamera } from "@babylonjs/core/Cameras/freeCamera";
 import { HemisphericLight } from "@babylonjs/core/Lights/hemisphericLight";
 import { DirectionalLight } from "@babylonjs/core/Lights/directionalLight";
@@ -48,6 +49,14 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
   const camera = new FreeCamera("arcade-camera", new Vector3(0, 8.8, -15.8), scene);
   camera.setTarget(new Vector3(0, 0.45, -0.35));
   camera.fov = 0.72;
+  // Portrait phones otherwise receive a very narrow horizontal slice of the
+  // perspective camera. Keep the desktop vertical-FOV composition untouched,
+  // but use a horizontal FOV on narrow viewports so all nine holes stay visible
+  // and every koala remains inside the tappable canvas.
+  if (typeof window !== "undefined" && window.matchMedia("(max-width: 700px)").matches) {
+    camera.fovMode = Camera.FOVMODE_HORIZONTAL_FIXED;
+    camera.fov = 1.16;
+  }
   camera.minZ = 0.1;
   camera.maxZ = 100;
   scene.activeCamera = camera;
