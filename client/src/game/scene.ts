@@ -12,6 +12,7 @@ import { Color3 } from "@babylonjs/core/Maths/math.color";
 import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import "@babylonjs/core/Shaders/default.vertex";
 import "@babylonjs/core/Shaders/default.fragment";
+import "@babylonjs/core/Culling/ray";
 import { createArena } from "@/game/arena";
 import { EffectsManager } from "@/game/effects";
 import { GameState, type GameSnapshot } from "@/game/gameState";
@@ -71,12 +72,7 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
   }));
   targets.forEach((target) => target.forceHide());
 
-  const demoParam = new URLSearchParams(window.location.search).get("demo");
-  const demo = demoParam !== null;
-  const demoSequence = [4, 1, 7, 2, 8, 5, 0, 6, 3];
-  let demoIndex = 0;
   let spawnTimer = 0.3;
-  let demoHitTimer = 0;
   let lastSpawnId = -1;
   let disposed = false;
   let lastMode = state.getSnapshot().mode;
@@ -92,11 +88,6 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
   };
 
   const chooseHole = () => {
-    if (demo) {
-      const id = demoSequence[demoIndex % demoSequence.length];
-      demoIndex += 1;
-      return targets[id];
-    }
     const available = targets.filter((target) => !target.isActive() && target.id !== lastSpawnId);
     const pool = available.length > 0 ? available : targets.filter((target) => !target.isActive());
     return pool[Math.floor(Math.random() * Math.max(1, pool.length))] ?? targets[0];
@@ -109,7 +100,7 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
     const target = chooseHole();
     if (!target || target.isActive()) return;
     lastSpawnId = target.id;
-    target.spawn(demo ? Math.max(difficulty.visibleDuration, 2.1) : difficulty.visibleDuration);
+    target.spawn(difficulty.visibleDuration);
     effects.dust(target.x, target.z);
   };
 
@@ -168,17 +159,11 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
 
   const start = () => {
     targets.forEach((target) => target.forceHide());
-    demoIndex = 0;
     lastSpawnId = -1;
     // The 0.08s launch delay plus the 0.38s rise places the first visible
     // koala inside the requested 0.3–0.5s window.
     spawnTimer = 0.08;
-    demoHitTimer = 0;
     state.start();
-    if (demo && demoParam !== "gameover") {
-      spawnTarget();
-      spawnTimer = state.getDifficulty().spawnInterval;
-    }
     emitModeIfChanged();
   };
 
@@ -201,13 +186,6 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
         // natural play never leave a long empty gap between koalas.
         spawnTimer = countActiveTargets() > beforeCount ? state.getDifficulty().spawnInterval : 0.14;
       }
-      if (demo) {
-        demoHitTimer += delta;
-        if (demoHitTimer >= 1.55) {
-          const visible = targets.find((target) => target.isHittable());
-          if (visible && hitTarget(visible)) demoHitTimer = 0;
-        }
-      }
     }
 
     targets.forEach((target) => {
@@ -221,15 +199,6 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
     state.setActiveTargets(countActiveTargets());
     effects.update(delta);
   });
-
-  if (demo) {
-    start();
-    if (demoParam === "gameover") {
-      for (let i = 0; i < 6; i += 1) state.registerHit();
-      state.forceGameOver();
-      emitModeIfChanged();
-    }
-  }
 
   return {
     scene,
