@@ -2,15 +2,18 @@
  * Field Day Scrappy Charm reminder: audio should feel like a tiny tactile
  * cabinet—bright hit chirps, a soft comic miss, a quick koala pop, and a
  * compact energetic backing loop. Keep music underneath gameplay feedback.
- * All cues are synthesized in-browser; the original music loop is loaded
- * lazily after a user gesture so autoplay restrictions never block the game.
+ * All cues are synthesized in-browser; original music loops are loaded lazily
+ * after a user gesture so autoplay restrictions never block the game.
  */
 
 type AudioListener = (muted: boolean) => void;
-
 type AudioContextConstructor = typeof AudioContext;
 
-const MUSIC_URL = "/manus-storage/koala-whack-engagement-loop-32s_50bcff19.wav";
+const MUSIC_URLS = [
+  "/manus-storage/koala-whack-engagement-loop-32s_50bcff19.wav",
+  "/manus-storage/koala-whack-alt-gumleaf-32s_8873fbd1.wav",
+  "/manus-storage/koala-whack-alt-sapling-32s_3ecdc972.wav",
+] as const;
 
 function getAudioContextConstructor(): AudioContextConstructor | null {
   if (typeof window === "undefined") return null;
@@ -25,10 +28,12 @@ export class ArcadeAudio {
   private master: GainNode | null = null;
   private sfxGain: GainNode | null = null;
   private musicGain: GainNode | null = null;
-  private musicBuffer: AudioBuffer | null = null;
+  private readonly musicBuffers = new Map<string, AudioBuffer>();
+  private readonly musicLoads = new Map<string, Promise<void>>();
   private musicSource: AudioBufferSourceNode | null = null;
-  private musicLoading: Promise<void> | null = null;
   private musicRequested = false;
+  private requestedMusicUrl: string | null = null;
+  private nextTrackIndex = 0;
   private readonly listeners = new Set<AudioListener>();
   private muted = this.readMutedPreference();
 
@@ -50,22 +55,16 @@ export class ArcadeAudio {
 
   startMusic() {
     this.musicRequested = true;
-    const context = this.ensureContext();
-    if (!context || this.muted) return;
-    if (this.musicBuffer) {
-      this.playMusic(context);
-      return;
-    }
-    if (!this.musicLoading) {
-      this.musicLoading = this.loadMusic(context);
-    }
+    this.requestedMusicUrl = MUSIC_URLS[this.nextTrackIndex % MUSIC_URLS.length];
+    this.nextTrackIndex = (this.nextTrackIndex + 1) % MUSIC_URLS.length;
+    this.stopCurrentMusicSource();
+    this.resumeRequestedMusic();
   }
 
   stopMusic() {
     this.musicRequested = false;
-    this.musicSource?.stop();
-    this.musicSource?.disconnect();
-    this.musicSource = null;
+    this.requestedMusicUrl = null;
+    this.stopCurrentMusicSource();
   }
 
   setMuted(muted: boolean) {
@@ -78,7 +77,7 @@ export class ArcadeAudio {
     if (this.master && this.context) {
       this.master.gain.setTargetAtTime(muted ? 0 : 1, this.context.currentTime, 0.018);
     }
-    if (!muted && this.musicRequested) this.startMusic();
+    if (!muted && this.musicRequested) this.resumeRequestedMusic();
     this.listeners.forEach((listener) => listener(this.muted));
   }
 
@@ -139,8 +138,8 @@ export class ArcadeAudio {
     this.master = null;
     this.sfxGain = null;
     this.musicGain = null;
-    this.musicBuffer = null;
-    this.musicLoading = null;
+    this.musicBuffers.clear();
+    this.musicLoads.clear();
     this.listeners.clear();
   }
 
@@ -170,26 +169,43 @@ export class ArcadeAudio {
     }
   }
 
-  private async loadMusic(context: AudioContext) {
+  private resumeRequestedMusic() {
+    const context = this.ensureContext();
+    if (!context || this.muted || !this.musicRequested || !this.requestedMusicUrl) return;
+    const url = this.requestedMusicUrl;
+    const cached = this.musicBuffers.get(url);
+    if (cached) {
+      this.playMusic(context, cached, url);
+      return;
+    }
+    if (!this.musicLoads.has(url)) {
+      const load = this.loadMusic(context, url);
+      this.musicLoads.set(url, load);
+      void load.finally(() => this.musicLoads.delete(url));
+    }
+  }
+
+  private async loadMusic(context: AudioContext, url: string) {
     try {
-      const response = await fetch(MUSIC_URL);
+      const response = await fetch(url);
       if (!response.ok) throw new Error(`Music request failed: ${response.status}`);
       const bytes = await response.arrayBuffer();
       const buffer = await context.decodeAudioData(bytes);
       if (this.context !== context) return;
-      this.musicBuffer = buffer;
-      if (this.musicRequested && !this.muted) this.playMusic(context);
+      this.musicBuffers.set(url, buffer);
+      if (this.musicRequested && this.requestedMusicUrl === url && !this.muted) {
+        this.playMusic(context, buffer, url);
+      }
     } catch {
       // Gameplay remains fully usable if a browser blocks or cannot decode music.
-    } finally {
-      this.musicLoading = null;
     }
   }
 
-  private playMusic(context: AudioContext) {
-    if (!this.musicBuffer || !this.musicGain || this.musicSource || this.muted) return;
+  private playMusic(context: AudioContext, buffer: AudioBuffer, url: string) {
+    if (!this.musicGain || this.muted || !this.musicRequested || this.requestedMusicUrl !== url) return;
+    this.stopCurrentMusicSource();
     const source = context.createBufferSource();
-    source.buffer = this.musicBuffer;
+    source.buffer = buffer;
     source.loop = true;
     source.connect(this.musicGain);
     source.onended = () => {
@@ -197,6 +213,18 @@ export class ArcadeAudio {
     };
     source.start(0);
     this.musicSource = source;
+  }
+
+  private stopCurrentMusicSource() {
+    if (this.musicSource) {
+      try {
+        this.musicSource.stop();
+      } catch {
+        // A source that already ended is safe to discard.
+      }
+      this.musicSource.disconnect();
+      this.musicSource = null;
+    }
   }
 
   private tone({

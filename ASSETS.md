@@ -10,7 +10,9 @@
 | `koala-character-cutout.png` | Koala target texture | `/manus-storage/koala-character-cutout_a9e925f7.png` | Front-facing transparent cutout; mapped to a billboard plane that rises from each hole. |
 | `eucalyptus-ground-texture.png` | Playfield surface texture | `/manus-storage/eucalyptus-ground-texture_d0f4d1a9.png` | Tileable olive eucalyptus earth texture for the procedural ground mesh. |
 | `koala-whack-logo.png` | Brand emblem and favicon | `/manus-storage/koala-whack-logo_50229f11.png` | Transparent koala-ear / sunglasses / impact-star symbol, used at readable size in the HUD. |
-| `koala-whack-arcade-loop.wav` | Looping background music | `/manus-storage/koala-whack-engagement-loop-32s_50bcff19.wav` | Original 158 BPM royalty-safe instrumental arcade loop with frequent small rhythmic variations; 32s PCM WAV for seamless looping. |
+| `koala-whack-arcade-loop.wav` | Looping background music, rotation track 1 | `/manus-storage/koala-whack-engagement-loop-32s_50bcff19.wav` | Original 158 BPM royalty-safe instrumental arcade loop with frequent small rhythmic variations; 32s PCM WAV for seamless looping. |
+| `koala-whack-alt-gumleaf.wav` | Looping background music, rotation track 2 | `/manus-storage/koala-whack-alt-gumleaf-32s_8873fbd1.wav` | Original 146 BPM warm, bouncy gumleaf-grove loop; 32s PCM WAV. |
+| `koala-whack-alt-sapling.wav` | Looping background music, rotation track 3 | `/manus-storage/koala-whack-alt-sapling-32s_3ecdc972.wav` | Original 168 BPM punchier later-round loop; PCM WAV prepared for rotation. |
 
 ## Runtime asset rules
 

@@ -32,3 +32,11 @@
 - [x] Integrate only the audio asset and audio playback path without modifying gameplay behavior.
 - [x] Verify audio loading, looping, mute behavior, and unchanged hit/miss/gameplay flow.
 - [x] Save an audio-only checkpoint and report the result.
+
+# Alternate Track Rotation
+
+- [x] Generate two additional original, royalty-safe arcade loops with distinct moods and compatible loudness.
+- [x] Convert each track to an exact loop-safe PCM format and upload the assets.
+- [x] Update the audio manager to select a different track on each new round without changing SFX behavior.
+- [x] Verify lazy loading, looping, mute persistence, replay rotation, and unchanged gameplay flow.
+- [x] Save a rotation-enabled checkpoint and report the result.

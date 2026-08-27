@@ -30,7 +30,7 @@ The visible-koala collider is now 2.02 × 2.58 × 0.66 units, covering ears, hea
 
 The game now uses a faster arcade curve: 200ms rise, 130ms hit recoil, 160–180ms retreat, level-one 640ms spawn cadence with slight fair jitter, 1.12s exposure, and progressively faster 280ms cadence with 620ms exposure floor. Level 3 unlocks two active targets while random hole selection continues to avoid immediate repeats. The dedicated collider and one-hit protection are unchanged.
 
-The audio manager now loads `/manus-storage/koala-whack-arcade-loop-32s_8b9e9f36.wav` after the first game gesture, loops the original 156 BPM instrumental through a music gain at 28%, and keeps SFX on a separate 82% gain. Appear pop and score ding cues are synthesized alongside the existing hit, miss, and game-over cues. The persisted mute toggle controls both channels, and music stops on game-over and restarts on replay.
+The audio manager now rotates three original royalty-safe instrumental loops after the first game gesture: the 158 BPM engagement loop, the 146 BPM warm gumleaf loop, and the 168 BPM punchier sapling loop. Each track is loaded lazily, cached by URL, and looped through the music gain at 28%; gameplay feedback remains on a separate 82% SFX gain. Appear pop and score ding cues remain synthesized alongside the existing hit, miss, and game-over cues. The persisted mute toggle controls both channels, music stops on game-over, and replay advances to the next track without changing gameplay.
 
 ## Next steps
 
