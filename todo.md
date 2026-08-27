@@ -1,9 +1,8 @@
-# Koala Whack 3D — Hammer Cursor and Faster Start
+# Koala Whack 3D — Raycast Pipeline Diagnosis
 
-- [x] Audit current collider, spawn cadence, pointer events, and cursor presentation.
-- [x] Broaden the dedicated koala collider to cover head, ears, face, sunglasses, hoodie, and visible body while staying inside the target area.
-- [x] Add a smooth hammer cursor that follows mouse/touch position during active play and hides the normal cursor.
-- [x] Animate the hammer down and back on every click, synchronized with the raycast.
-- [x] Make the first koala appear within approximately 0.3–0.5 seconds and keep progressive speed increases fair.
-- [x] Preserve physical holes, direct emergence, exact hit/miss behavior, audio, HUD, score, timer, and restart systems.
-- [x] Run type-check/build, capture desktop/mobile verification states, and save the corrected checkpoint.
+- [x] Trace pointer-down delivery, active camera ray generation, collider hierarchy, and UI/canvas layering.
+- [x] Instrument the click path with temporary raycast/object/layer/result diagnostics.
+- [x] Correct the exact raycast-to-koala identification failure without using the hammer visual as hit logic.
+- [x] Verify collider visibility, attachment, enabled state, and runtime position over the koala.
+- [x] Test face, body, ear, beside, ground, hole, and rapid-double-click behavior.
+- [x] Remove development-only diagnostics, run type-check/build, and save the corrected checkpoint.

@@ -10,7 +10,6 @@ import { HemisphericLight } from "@babylonjs/core/Lights/hemisphericLight";
 import { DirectionalLight } from "@babylonjs/core/Lights/directionalLight";
 import { Color3 } from "@babylonjs/core/Maths/math.color";
 import { Vector3 } from "@babylonjs/core/Maths/math.vector";
-import { PointerEventTypes } from "@babylonjs/core/Events/pointerEvents";
 import { createArena } from "@/game/arena";
 import { EffectsManager } from "@/game/effects";
 import { GameState, type GameSnapshot } from "@/game/gameState";
@@ -47,6 +46,7 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
   camera.fov = 0.72;
   camera.minZ = 0.1;
   camera.maxZ = 100;
+  scene.activeCamera = camera;
 
   const skyLight = new HemisphericLight("grove-sky-light", new Vector3(0, 1, 0), scene);
   skyLight.intensity = 1.08;
@@ -121,10 +121,21 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
     return true;
   };
 
-  const tryHit = (x: number, y: number) => {
+  const tryHit = (clientX: number, clientY: number) => {
     if (!state.isPlaying()) return;
-    const pick = scene.pick(x, y, (mesh) => Boolean(mesh.metadata?.koalaHitCollider));
-    const pickedTarget = pick.pickedMesh?.metadata?.koalaHitCollider as KoalaTarget | undefined;
+    const rect = canvas.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    scene.pointerX = x;
+    scene.pointerY = y;
+    scene.updateTransformMatrix(true);
+    targets.forEach((target) => target.hitCollider.computeWorldMatrix(true));
+
+    // Use Babylon's stable native CSS-space picking path with the active camera.
+    const activeCamera = scene.activeCamera ?? camera;
+    const pick = scene.pick(x, y, (mesh) => Boolean(mesh.metadata?.koalaHitCollider), false, activeCamera);
+    const pickedTarget = pick?.pickedMesh?.metadata?.koalaHitCollider as KoalaTarget | undefined;
+
     if (pickedTarget && hitTarget(pickedTarget)) return;
 
     // No fallback or distance test: only the dedicated visible koala collider can
@@ -132,11 +143,12 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
     emitEvent(listeners, { type: "miss" });
   };
 
-  const pointerObserver = scene.onPointerObservable.add((pointerInfo) => {
-    if (pointerInfo.type === PointerEventTypes.POINTERDOWN) {
-      tryHit(scene.pointerX, scene.pointerY);
-    }
-  });
+  const onCanvasPointerDown = (event: PointerEvent) => {
+    if (event.button !== undefined && event.button !== 0) return;
+    event.preventDefault();
+    tryHit(event.clientX, event.clientY);
+  };
+  canvas.addEventListener("pointerdown", onCanvasPointerDown, { passive: false });
 
   const keydown = (event: KeyboardEvent) => {
     if (event.key === "Enter" || event.key === " ") {
@@ -223,7 +235,7 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
     },
     dispose: () => {
       disposed = true;
-      scene.onPointerObservable.remove(pointerObserver);
+      canvas.removeEventListener("pointerdown", onCanvasPointerDown);
       scene.onBeforeRenderObservable.remove(updateObserver);
       window.removeEventListener("keydown", keydown);
       targets.forEach((target) => target.dispose());

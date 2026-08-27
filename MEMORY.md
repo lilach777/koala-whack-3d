@@ -29,3 +29,7 @@ The visible-koala collider is now 2.02 × 2.58 × 0.66 units, covering ears, hea
 ## Next steps
 
 Run final type-check/build and capture desktop/mobile screenshots for the updated HUD. Verify the mute toggle manually once in a browser with sound enabled; the game remains fully playable when audio is unavailable or muted.
+
+## Raycast pipeline diagnosis — Aug 27, 2026
+
+The reported click failure was traced through the browser runtime log. The attempted `pickWithRay`/`createPickingRay` path required Babylon’s ray registration side effect and triggered a runtime exception; stale Vite optimized dependencies then produced shader failures and a blank active playfield. The stable implementation keeps Babylon’s existing native `scene.pick` path, passes the explicit active camera, uses CSS-space coordinates from a direct canvas `pointerdown` listener, refreshes scene and collider world matrices before picking, and preserves the exact collider-only predicate with no fallback or distance scoring. The ray module import and development diagnostics were removed before final validation. Vite’s optimized dependency cache was cleared before the final clean runtime check.
