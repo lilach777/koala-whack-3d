@@ -77,12 +77,14 @@ export class KoalaTarget {
     // A separate, invisible box is the only pickable surface for this target.
     // It is narrower than the hole opening and sits inside the visible koala.
     this.hitCollider = MeshBuilder.CreateBox(`koala-hit-collider-${options.id}`, {
-      width: 1.5,
-      height: 2.18,
-      depth: 0.62,
+      // Cover the full head, ears, face, hoodie, and visible upper body while
+      // remaining inside the 2.15 × 2.8 cutout and well inside the hole opening.
+      width: 2.02,
+      height: 2.58,
+      depth: 0.66,
     }, scene);
     this.hitCollider.parent = this.mesh;
-    this.hitCollider.position.y = 0.03;
+    this.hitCollider.position.y = 0.05;
     this.hitCollider.isPickable = false;
     this.hitCollider.metadata = { koalaHitCollider: this, koalaTarget: this };
     const hitMaterial = new StandardMaterial(`koala-hit-material-${options.id}`, scene);

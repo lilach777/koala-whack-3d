@@ -59,8 +59,8 @@ export class GameState {
 
   getDifficulty(): Difficulty {
     return {
-      spawnInterval: Math.max(0.52, 1.18 - (this.level - 1) * 0.08),
-      visibleDuration: Math.max(0.68, 1.34 - (this.level - 1) * 0.065),
+      spawnInterval: Math.max(0.48, 0.9 - (this.level - 1) * 0.07),
+      visibleDuration: Math.max(0.72, 1.28 - (this.level - 1) * 0.06),
       maxTargets: this.level >= 4 ? 2 : 1,
     };
   }

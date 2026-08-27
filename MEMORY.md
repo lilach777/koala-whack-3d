@@ -22,6 +22,10 @@ The game now includes a self-contained `ArcadeAudio` service that synthesizes di
 
 Pointer picks now filter exclusively for a dedicated invisible `koalaHitCollider` parented to the active koala. The previous global fallback that scored any click while a koala was visible has been removed. The collider is narrower than the hole, is pickable only during the visible phase, and is disabled immediately after a successful hit, so ground, hole, rim, empty, unrelated, and duplicate clicks remain misses. Hole visuals now use dark matte octagonal clay geometry with a deep opening and a foreground lip; all torus-based ring/portal/halo meshes were removed. Targets start below the ground surface, rise vertically from their own hole, and sink back into it.
 
+## Hammer cursor and pacing follow-up
+
+The visible-koala collider is now 2.02 × 2.58 × 0.66 units, covering ears, head, face, sunglasses, hoodie, and visible body while remaining narrower than the hole. It stays pickable only during the visible phase and is disabled on hit/retreat. Active gameplay renders a pointer-events-none CSS hammer overlay owned by React; the browser cursor is hidden across the active shell, the head center is aligned to the pointer, and each pointer press remounts a short swing animation. The initial spawn timer is 0.08 seconds plus a 0.38-second rise, while level-one cadence is 0.9 seconds with a 1.28-second visible window.
+
 ## Next steps
 
 Run final type-check/build and capture desktop/mobile screenshots for the updated HUD. Verify the mute toggle manually once in a browser with sound enabled; the game remains fully playable when audio is unavailable or muted.

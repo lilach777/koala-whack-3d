@@ -151,7 +151,9 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
     targets.forEach((target) => target.forceHide());
     demoIndex = 0;
     lastSpawnId = -1;
-    spawnTimer = 0.24;
+    // The 0.08s launch delay plus the 0.38s rise places the first visible
+    // koala inside the requested 0.3–0.5s window.
+    spawnTimer = 0.08;
     demoHitTimer = 0;
     state.start();
     if (demo && demoParam !== "gameover") {

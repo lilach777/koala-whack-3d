@@ -59,6 +59,8 @@ export default function Home() {
   const [snapshot, setSnapshot] = useState<GameSnapshot>(INITIAL_STATE);
   const [hitBanner, setHitBanner] = useState<{ key: number; points: number } | null>(null);
   const [missKey, setMissKey] = useState(0);
+  const [hammerPosition, setHammerPosition] = useState(() => ({ x: window.innerWidth / 2, y: window.innerHeight / 2 }));
+  const [hammerSwing, setHammerSwing] = useState(0);
   const lastHitRef = useRef(0);
 
   const onReady = useCallback((nextHandle: GameHandle | null) => {
@@ -76,6 +78,21 @@ export default function Home() {
   useEffect(() => {
     return () => audio.dispose();
   }, [audio]);
+
+  useEffect(() => {
+    const moveHammer = (event: PointerEvent) => {
+      setHammerPosition({ x: event.clientX, y: event.clientY });
+    };
+    const swingHammer = () => {
+      if (snapshot.mode === "playing") setHammerSwing((value) => value + 1);
+    };
+    window.addEventListener("pointermove", moveHammer, { passive: true });
+    window.addEventListener("pointerdown", swingHammer);
+    return () => {
+      window.removeEventListener("pointermove", moveHammer);
+      window.removeEventListener("pointerdown", swingHammer);
+    };
+  }, [snapshot.mode]);
 
   useEffect(() => {
     if (!handle) return;
@@ -122,8 +139,20 @@ export default function Home() {
   };
 
   return (
-    <main className="game-shell">
+    <main className={`game-shell ${snapshot.mode === "playing" ? "game-shell--playing" : ""}`}>
       <GameCanvas onReady={onReady} />
+      {snapshot.mode === "playing" && (
+        <div
+          className="hammer-cursor"
+          style={{ left: hammerPosition.x, top: hammerPosition.y }}
+          aria-hidden="true"
+        >
+          <div key={hammerSwing} className={`hammer-cursor__motion ${hammerSwing ? "hammer-cursor__motion--swing" : ""}`}>
+            <span className="hammer-cursor__head" />
+            <span className="hammer-cursor__handle" />
+          </div>
+        </div>
+      )}
       <div className="screen-grain" aria-hidden="true" />
       <div className="sky-vignette" aria-hidden="true" />
 

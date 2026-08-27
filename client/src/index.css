@@ -802,3 +802,101 @@ kbd {
     transition-duration: 1ms !important;
   }
 }
+
+/* Field Day Scrappy Charm: the hammer is the physical action cue—chunky,
+   offset like a toy prop, and visible only while the round is live. */
+.game-shell--playing,
+.game-shell--playing * {
+  cursor: none !important;
+}
+
+.hammer-cursor {
+  position: fixed;
+  z-index: 6;
+  width: 4.7rem;
+  height: 5.9rem;
+  pointer-events: none;
+  transform: translate(-1.85rem, -0.8rem);
+  filter: drop-shadow(0.22rem 0.34rem 0 rgba(13, 47, 54, 0.34));
+}
+
+.hammer-cursor__motion {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-origin: 62% 24%;
+  animation: hammer-idle 1.8s ease-in-out infinite;
+}
+
+.hammer-cursor__head {
+  position: absolute;
+  top: 0;
+  left: 0.08rem;
+  width: 3.55rem;
+  height: 1.58rem;
+  border: 0.16rem solid #3b2d2c;
+  border-radius: 0.68rem 0.48rem 0.48rem 0.68rem;
+  background: linear-gradient(180deg, #f6d3a6 0%, #d78b5a 48%, #b65c47 100%);
+  transform: rotate(-17deg);
+}
+
+.hammer-cursor__head::before,
+.hammer-cursor__head::after {
+  position: absolute;
+  top: 0.2rem;
+  width: 0.33rem;
+  height: 0.84rem;
+  border-radius: 0.18rem;
+  background: rgba(255, 248, 233, 0.54);
+  content: "";
+}
+
+.hammer-cursor__head::before { left: 0.48rem; }
+.hammer-cursor__head::after { right: 0.42rem; opacity: 0.3; }
+
+.hammer-cursor__handle {
+  position: absolute;
+  top: 1.18rem;
+  left: 2.22rem;
+  width: 0.78rem;
+  height: 4.28rem;
+  border: 0.13rem solid #3b2d2c;
+  border-radius: 0.32rem 0.32rem 0.68rem 0.68rem;
+  background: linear-gradient(90deg, #9b5936 0%, #e08b4d 45%, #8d4b31 100%);
+  transform: rotate(-17deg);
+}
+
+.hammer-cursor__handle::after {
+  position: absolute;
+  right: 0.06rem;
+  bottom: 0.36rem;
+  left: 0.06rem;
+  height: 0.32rem;
+  border-radius: 0.12rem;
+  background: rgba(59, 45, 44, 0.42);
+  box-shadow: 0 -0.72rem 0 rgba(59, 45, 44, 0.22), 0 -1.44rem 0 rgba(59, 45, 44, 0.18);
+  content: "";
+}
+
+@keyframes hammer-idle {
+  0%, 100% { transform: rotate(2deg) translateY(0); }
+  50% { transform: rotate(-2deg) translateY(-0.16rem); }
+}
+
+.hammer-cursor__motion--swing {
+  animation: hammer-swing 145ms var(--ease-out) !important;
+}
+
+@keyframes hammer-swing {
+  0% { transform: rotate(2deg) translateY(0); }
+  48% { transform: rotate(30deg) translate(0.32rem, 0.62rem); }
+  100% { transform: rotate(2deg) translateY(0); }
+}
+
+@media (max-width: 640px) {
+  .hammer-cursor {
+    width: 3.8rem;
+    height: 4.9rem;
+    transform: translate(-1.5rem, -0.66rem) scale(0.86);
+  }
+}
