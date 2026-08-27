@@ -75,3 +75,7 @@ Before each CSS, React component, or game module edit, ask: “Does this choice 
 - Every route and game state must show the framed 3 × 3 diorama, HUD rail, and Koala Whack 3D brand mark immediately; an uninterrupted teal field is never an acceptable primary screen.
 - The visual hierarchy must combine deep eucalyptus teal, chalk cream UI, olive field, terracotta clay holes, and reserved Koala Coral action accents, with no single-color state.
 - Brand presence is mandatory in non-active-play moments: use the custom blocky wordmark plus koala-ear/sunglasses emblem, paired with short cheeky host copy rather than generic game UI language.
+
+## Reference fidelity amendments
+
+The attached desired reference is now the ground truth for the mechanic presentation: a readable 3 × 3 field of chunky physical brown/octagonal holes on a warm open ground plane, with deep dark openings and strong contact shadows. Empty holes must remain visually empty. The koala must be visibly seated inside the opening as it rises vertically from below, with its lower body occluded by the physical rim. The current orange/yellow torus treatment is explicitly rejected; no halo, portal, arch, ring, or circular spawn indicator may remain. Pointer interaction must use the exact visible koala collider and must not infer a hit from proximity to the hole or from any global fallback.

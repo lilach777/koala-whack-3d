@@ -18,6 +18,10 @@ The scene uses procedural meshes for the arena and effects, an alpha-enabled gen
 
 The game now includes a self-contained `ArcadeAudio` service that synthesizes distinct hit, miss, and game-over cues with the Web Audio API. Audio is created lazily and resumed from the first user gesture to comply with browser autoplay rules. A `SOUND ON` / `SOUND OFF` HUD toggle uses `aria-pressed` and persists the mute preference under `koala-whack-muted` in local storage. The audio manager is owned by the React game page and disposed with the page lifecycle.
 
+## Hit detection and emergence fix
+
+Pointer picks now filter exclusively for a dedicated invisible `koalaHitCollider` parented to the active koala. The previous global fallback that scored any click while a koala was visible has been removed. The collider is narrower than the hole, is pickable only during the visible phase, and is disabled immediately after a successful hit, so ground, hole, rim, empty, unrelated, and duplicate clicks remain misses. Hole visuals now use dark matte octagonal clay geometry with a deep opening and a foreground lip; all torus-based ring/portal/halo meshes were removed. Targets start below the ground surface, rise vertically from their own hole, and sink back into it.
+
 ## Next steps
 
 Run final type-check/build and capture desktop/mobile screenshots for the updated HUD. Verify the mute toggle manually once in a browser with sound enabled; the game remains fully playable when audio is unavailable or muted.

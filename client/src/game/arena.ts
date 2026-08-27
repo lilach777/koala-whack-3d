@@ -25,8 +25,8 @@ export interface Arena {
 const TEAL = Color3.FromHexString("#153F48");
 const DEEP_TEAL = Color3.FromHexString("#0D2F36");
 const OLIVE = Color3.FromHexString("#52634A");
-const CLAY = Color3.FromHexString("#B86B50");
-const CLAY_LIGHT = Color3.FromHexString("#D99267");
+const CLAY = Color3.FromHexString("#49372C");
+const CLAY_LIGHT = Color3.FromHexString("#604635");
 const SOIL = Color3.FromHexString("#241E25");
 const CREAM = Color3.FromHexString("#F6E9D3");
 
@@ -100,28 +100,41 @@ export function createArena(scene: Scene, groundTextureUrl: string): Arena {
       voidMat.emissiveColor = Color3.FromHexString("#08070A");
       voidDisc.material = voidMat;
 
-      const rim = MeshBuilder.CreateTorus(`hole-rim-${id}`, {
-        diameter: 2.54,
-        thickness: 0.28,
-        tessellation: 32,
+      // A solid, low-poly clay collar reads as a physical hole rather than a
+      // portal or spawn indicator. The dark inset cap leaves a broad earthy rim.
+      const rim = MeshBuilder.CreateCylinder(`hole-rim-${id}`, {
+        diameter: 2.62,
+        height: 0.38,
+        tessellation: 8,
       }, scene);
       rim.position.set(x, 0.18, z);
-      rim.rotation.x = Math.PI / 2;
       rim.material = material(scene, `hole-rim-material-${id}`, CLAY_LIGHT);
 
-      const rimShadow = MeshBuilder.CreateTorus(`hole-rim-shadow-${id}`, {
+      const rimTop = MeshBuilder.CreateCylinder(`hole-rim-top-${id}`, {
         diameter: 2.2,
-        thickness: 0.075,
-        tessellation: 32,
+        height: 0.08,
+        tessellation: 8,
       }, scene);
-      rimShadow.position.set(x, 0.225, z);
-      rimShadow.rotation.x = Math.PI / 2;
-      rimShadow.material = material(scene, `hole-rim-shadow-material-${id}`, CLAY);
+      rimTop.position.set(x, 0.39, z);
+      rimTop.material = material(scene, `hole-rim-top-material-${id}`, CLAY);
 
-      const marker = MeshBuilder.CreateDisc(`hole-marker-${id}`, { radius: 0.08, tessellation: 18 }, scene);
-      marker.position.set(x, 0.22, z - 1.04);
-      marker.rotation.x = Math.PI / 2;
-      marker.material = material(scene, `hole-marker-material-${id}`, CREAM);
+      const opening = MeshBuilder.CreateCylinder(`hole-opening-${id}`, {
+        diameter: 1.92,
+        height: 0.06,
+        tessellation: 8,
+      }, scene);
+      opening.position.set(x, 0.405, z);
+      opening.material = material(scene, `hole-opening-material-${id}`, Color3.FromHexString("#17151A"));
+
+      // Opaque foreground lip guarantees depth-test occlusion for the alpha
+      // cutout, making the koala read as seated inside the same physical hole.
+      const frontLip = MeshBuilder.CreateBox(`hole-front-lip-${id}`, {
+        width: 2.0,
+        height: 0.52,
+        depth: 0.34,
+      }, scene);
+      frontLip.position.set(x, 0.58, z - 0.98);
+      frontLip.material = material(scene, `hole-front-lip-material-${id}`, CLAY_LIGHT);
 
       holes.push({ id, x, z });
       id += 1;

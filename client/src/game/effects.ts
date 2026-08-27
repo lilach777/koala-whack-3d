@@ -51,18 +51,6 @@ export class EffectsManager {
       });
     }
 
-    const ring = MeshBuilder.CreateTorus(`impact-ring-${Date.now()}`, {
-      diameter: 0.54,
-      thickness: 0.045,
-      tessellation: 24,
-    }, this.scene);
-    ring.rotation.x = Math.PI / 2;
-    ring.position.set(x, 0.14, z);
-    const ringMaterial = new StandardMaterial(`impact-ring-material-${Date.now()}`, this.scene);
-    ringMaterial.diffuseColor = this.coral;
-    ringMaterial.emissiveColor = this.coral.scale(0.2);
-    ring.material = ringMaterial;
-    this.bursts.push({ mesh: ring, material: ringMaterial, age: 0, duration: 0.45, originY: 0.14 });
   }
 
   dust(x: number, z: number) {

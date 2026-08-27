@@ -14,8 +14,8 @@
 
 ### 3. Procedural character animation and hit state handoff
 - **Why isolated:** The character must rise, settle, face the camera, accept one hit, react, retreat, and return to the pool without duplicate scoring or stuck states.
-- **Approach:** Use a front-facing transparent cutout plane textured with the generated koala art, parented to a per-hole target controller. Animate local Y and scale with a small state machine: hidden → rising → visible → hit/retreat. Set an `alreadyHit` guard per spawn, use forgiving radius-based pointer hit tests in screen space, and orient the plane toward the active camera.
-- **Verify:** Every spawn rises from below its rim, remains upright and front-facing, can be tapped/clicked reliably, scores exactly once, squashes before retreating, and releases the next spawn.
+- **Approach:** Use a front-facing transparent cutout plane textured with the generated koala art, parented to a per-hole target controller. Animate local Y and scale with a small state machine: hidden → rising → visible → hit/retreat. Set an `alreadyHit` guard per spawn, and keep a separate invisible collider mesh parented to the koala. The collider is pickable only during the visible phase and is narrower than the hole opening.
+- **Verify:** Every spawn rises from below its rim, remains upright and front-facing, only a ray intersecting that target's dedicated collider scores, ground/rim/hole/empty clicks miss, duplicate clicks score once, and the koala squashes before retreating into its own hole.
 
 ### 4. Progressive timing and game-over flow
 - **Why isolated:** Difficulty must increase gradually without impossible spawn patterns, missed targets must matter, and the run needs a clear finish/restart path.
@@ -32,6 +32,7 @@ Build a single-page Babylon.js arcade game with a full-viewport canvas and a Rea
   - Spawn/hit/retreat animation transitions are smooth and never leave a koala stuck.
   - HUD is readable, high contrast, responsive, and does not cover the central hole field.
   - Ground texture and koala art load without missing-texture fallbacks.
+  - Every hole is a physical brown clay opening with a dark interior; no orange/yellow ring, portal, halo, arch, or spawn marker remains.
   - Game-specific scoring, combo, level, cadence, miss count, target selection, and timer behavior are visible.
   - Gameplay flow matches the provided brief.
   - No visual glitches, clipping, upside-down characters, duplicate scoring, or impossible spawn patterns.

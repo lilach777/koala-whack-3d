@@ -123,14 +123,12 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement)
 
   const tryHit = (x: number, y: number) => {
     if (!state.isPlaying()) return;
-    const pick = scene.pick(x, y, (mesh) => Boolean(mesh.metadata?.koalaTarget));
-    const pickedTarget = pick.pickedMesh?.metadata?.koalaTarget as KoalaTarget | undefined;
+    const pick = scene.pick(x, y, (mesh) => Boolean(mesh.metadata?.koalaHitCollider));
+    const pickedTarget = pick.pickedMesh?.metadata?.koalaHitCollider as KoalaTarget | undefined;
     if (pickedTarget && hitTarget(pickedTarget)) return;
 
-    // Forgiving catch radius: a tap slightly outside the cutout still catches the
-    // only visible koala when the scene's pick ray does not touch transparent pixels.
-    const fallback = targets.find((target) => target.isHittable());
-    if (fallback && hitTarget(fallback)) return;
+    // No fallback or distance test: only the dedicated visible koala collider can
+    // score. Ground, rims, holes, empty space, and unrelated meshes are misses.
     emitEvent(listeners, { type: "miss" });
   };
 
