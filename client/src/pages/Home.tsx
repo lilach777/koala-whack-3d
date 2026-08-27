@@ -4,11 +4,12 @@
  * the center holes unobstructed.
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Crosshair, MousePointer2, RotateCcw, Sparkles, Timer, Trophy, Zap } from "lucide-react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { Crosshair, MousePointer2, RotateCcw, Sparkles, Timer, Trophy, Volume2, VolumeX, Zap } from "lucide-react";
 import GameCanvas from "@/components/GameCanvas";
 import type { GameHandle } from "@/game/scene";
 import type { GameSnapshot } from "@/game/gameState";
+import { ArcadeAudio } from "@/game/audio";
 
 const LOGO_URL = "/manus-storage/koala-whack-logo_50229f11.png";
 
@@ -24,7 +25,7 @@ const INITIAL_STATE: GameSnapshot = {
   lastHit: 0,
 };
 
-function StatPill({ icon, label, value, accent = false }: { icon: React.ReactNode; label: string; value: string | number; accent?: boolean }) {
+function StatPill({ icon, label, value, accent = false }: { icon: ReactNode; label: string; value: string | number; accent?: boolean }) {
   return (
     <div className={`stat-pill ${accent ? "stat-pill--accent" : ""}`}>
       <div className="stat-pill__icon">{icon}</div>
@@ -50,6 +51,10 @@ function MissMeter({ misses, maxMisses }: { misses: number; maxMisses: number })
 }
 
 export default function Home() {
+  const audioRef = useRef<ArcadeAudio | null>(null);
+  if (!audioRef.current) audioRef.current = new ArcadeAudio();
+  const audio = audioRef.current;
+  const [muted, setMuted] = useState(audio.isMuted());
   const [handle, setHandle] = useState<GameHandle | null>(null);
   const [snapshot, setSnapshot] = useState<GameSnapshot>(INITIAL_STATE);
   const [hitBanner, setHitBanner] = useState<{ key: number; points: number } | null>(null);
@@ -62,6 +67,17 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    const unsubscribeAudio = audio.subscribe(setMuted);
+    return () => {
+      unsubscribeAudio();
+    };
+  }, [audio]);
+
+  useEffect(() => {
+    return () => audio.dispose();
+  }, [audio]);
+
+  useEffect(() => {
     if (!handle) return;
     const unsubscribe = handle.subscribe((nextSnapshot) => {
       setSnapshot(nextSnapshot);
@@ -71,11 +87,19 @@ export default function Home() {
     });
     const offEvent = handle.onEvent((event) => {
       if (event.type === "hit") {
+        audio.unlock();
+        audio.playHit(event.points);
         setHitBanner({ key: Date.now(), points: event.points });
         window.setTimeout(() => setHitBanner(null), 520);
       }
       if (event.type === "miss") {
+        audio.unlock();
+        audio.playMiss();
         setMissKey((value) => value + 1);
+      }
+      if (event.type === "mode" && event.mode === "gameover") {
+        audio.unlock();
+        audio.playGameOver();
       }
     });
     return () => {
@@ -84,8 +108,18 @@ export default function Home() {
     };
   }, [handle]);
 
-  const startGame = () => handle?.start();
-  const restartGame = () => handle?.restart();
+  const startGame = () => {
+    audio.unlock();
+    handle?.start();
+  };
+  const restartGame = () => {
+    audio.unlock();
+    handle?.restart();
+  };
+  const toggleMute = () => {
+    audio.unlock();
+    audio.toggle();
+  };
 
   return (
     <main className="game-shell">
@@ -108,10 +142,16 @@ export default function Home() {
             <span>{snapshot.mode === "playing" ? "GROVE LIVE" : "GROVE READY"}</span>
           </div>
 
-          <div className="hud-stats">
-            <StatPill icon={<Trophy size={16} strokeWidth={2.4} />} label="SCORE" value={String(snapshot.score).padStart(4, "0")} accent />
-            <StatPill icon={<Sparkles size={16} strokeWidth={2.4} />} label="LEVEL" value={String(snapshot.level).padStart(2, "0")} />
-            <StatPill icon={<Timer size={16} strokeWidth={2.4} />} label="TIME" value={`${String(Math.ceil(snapshot.timeLeft)).padStart(2, "0")}s`} />
+          <div className="hud-actions">
+            <div className="hud-stats">
+              <StatPill icon={<Trophy size={16} strokeWidth={2.4} />} label="SCORE" value={String(snapshot.score).padStart(4, "0")} accent />
+              <StatPill icon={<Sparkles size={16} strokeWidth={2.4} />} label="LEVEL" value={String(snapshot.level).padStart(2, "0")} />
+              <StatPill icon={<Timer size={16} strokeWidth={2.4} />} label="TIME" value={`${String(Math.ceil(snapshot.timeLeft)).padStart(2, "0")}s`} />
+            </div>
+            <button className="mute-toggle" type="button" onClick={toggleMute} aria-pressed={muted} aria-label={muted ? "Turn sound on" : "Mute sound"}>
+              {muted ? <VolumeX size={16} strokeWidth={2.4} /> : <Volume2 size={16} strokeWidth={2.4} />}
+              <span>{muted ? "SOUND OFF" : "SOUND ON"}</span>
+            </button>
           </div>
         </header>
 

@@ -14,16 +14,17 @@ React is the picture frame: it owns the route, HUD, start/game-over overlays, an
 | `client/src/game/target.ts` | Target behavior | Owns one koala cutout plane, hidden/visible positions, rise/settle/hit/retreat animation state, and one-hit guard. |
 | `client/src/game/arena.ts` | Environment | Creates the nine hole assemblies, ground, rims, interiors, dust anchors, foliage accents, and playfield layout. |
 | `client/src/game/effects.ts` | Feedback visuals | Builds pointer ripples, coral impact stars, score pops, and small dust puffs. |
-| `client/src/pages/Home.tsx` | React UI | Renders the full-screen game shell and HTML HUD, subscribes to `GameHandle` events, and exposes start/restart/pause actions. |
+| `client/src/game/audio.ts` | Audio service | Synthesizes short hit, miss, and game-over cues with the Web Audio API, unlocks from user gestures, and persists mute preference in local storage. |
+| `client/src/pages/Home.tsx` | React UI | Renders the full-screen game shell and HTML HUD, subscribes to `GameHandle` events, exposes start/restart actions, and owns the mute toggle surface. |
 | `client/src/index.css` | Design system | Defines Field Day Scrappy Charm tokens, HUD surfaces, type hierarchy, responsive safe areas, and motion preferences. |
 
 ## State flow
 
 `menu` shows the start overlay and a calm idle arena. `playing` enables spawn scheduling, input, timer, and difficulty progression. `gameover` stops spawning, leaves the final score visible, and shows restart. A target follows `hidden → rising → visible → hit/retreat → hidden`; the target controller owns its transition and emits exactly one hit event per appearance.
 
-## Input contract
+## Input and audio contract
 
-Pointer and touch events on the canvas route through one normalized screen-coordinate hit test. Space and Enter trigger the deterministic demo/action path for keyboard users. UI buttons call scene methods rather than mutating gameplay internals. `?demo` turns on a deterministic autopilot that spawns and taps targets on a predictable cadence so screenshots expose real gameplay.
+Pointer and touch events on the canvas route through one normalized screen-coordinate hit test. Space and Enter trigger the deterministic demo/action path for keyboard users. UI buttons call scene methods rather than mutating gameplay internals. `?demo` turns on a deterministic autopilot that spawns and taps targets on a predictable cadence so screenshots expose real gameplay. The audio service creates its context lazily and resumes it from the first user gesture, avoiding browser autoplay violations. Hit, miss, and game-over events are translated to distinct synthesized cues. The mute control uses `aria-pressed` and persists `koala-whack-muted` locally so the preference survives reloads.
 
 ## Asset contract
 

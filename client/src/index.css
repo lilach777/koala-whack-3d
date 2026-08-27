@@ -178,9 +178,59 @@ button {
   animation: pulse-dot 1.8s ease-out infinite;
 }
 
+.hud-actions {
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+  gap: clamp(0.35rem, 1vw, 0.72rem);
+  pointer-events: auto;
+}
+
 .hud-stats {
   justify-content: flex-end;
   gap: clamp(0.35rem, 1vw, 0.72rem);
+}
+
+.mute-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.42rem;
+  align-self: stretch;
+  padding: 0 0.8rem;
+  border: 1px solid rgba(246, 233, 211, 0.3);
+  border-radius: 0.66rem 0.3rem 0.66rem 0.3rem;
+  background: rgba(13, 47, 54, 0.48);
+  color: rgba(246, 233, 211, 0.82);
+  cursor: pointer;
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  white-space: nowrap;
+  backdrop-filter: blur(7px);
+  transition: background 160ms var(--ease-out), border-color 160ms var(--ease-out), color 160ms var(--ease-out), transform 160ms var(--ease-out);
+}
+
+.mute-toggle:hover {
+  border-color: rgba(242, 107, 79, 0.72);
+  background: rgba(242, 107, 79, 0.18);
+  color: var(--paper);
+  transform: translateY(-1px);
+}
+
+.mute-toggle:active {
+  transform: scale(0.97);
+}
+
+.mute-toggle[aria-pressed="true"] {
+  border-color: rgba(242, 107, 79, 0.65);
+  background: rgba(242, 107, 79, 0.9);
+  color: var(--paper);
+}
+
+.mute-toggle:focus-visible,
+.primary-button:focus-visible {
+  outline: 2px solid var(--paper);
+  outline-offset: 3px;
 }
 
 .stat-pill {
@@ -628,8 +678,23 @@ kbd {
     margin: -0.1rem 0 0 0.1rem;
   }
 
+  .hud-actions {
+    margin-left: auto;
+    width: 100%;
+    align-items: flex-start;
+  }
+
   .hud-stats {
     margin-left: auto;
+  }
+
+  .mute-toggle {
+    min-height: 2.62rem;
+    padding: 0 0.55rem;
+  }
+
+  .mute-toggle span {
+    display: none;
   }
 
   .stat-pill {
@@ -685,6 +750,10 @@ kbd {
 
   .round-stamp {
     font-size: 0.48rem;
+  }
+
+  .hud-actions {
+    gap: 0.25rem;
   }
 
   .hud-stats {

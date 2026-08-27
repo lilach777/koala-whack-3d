@@ -14,6 +14,10 @@ Keep the canvas full-screen and use a fixed readable arcade camera. Keep the pla
 
 The scene uses procedural meshes for the arena and effects, an alpha-enabled generated PNG for the koala, a generated ground texture, and a generated logo. The gameplay state is framework-agnostic and the React HUD observes events. A `?demo` query parameter provides deterministic active gameplay for visual verification.
 
+## Audio follow-up
+
+The game now includes a self-contained `ArcadeAudio` service that synthesizes distinct hit, miss, and game-over cues with the Web Audio API. Audio is created lazily and resumed from the first user gesture to comply with browser autoplay rules. A `SOUND ON` / `SOUND OFF` HUD toggle uses `aria-pressed` and persists the mute preference under `koala-whack-muted` in local storage. The audio manager is owned by the React game page and disposed with the page lifecycle.
+
 ## Next steps
 
-Install Babylon.js, implement the scene/game modules and React HUD, then run type-check/build and capture desktop/mobile screenshots for start, active, and game-over states. If the generated image job replaces its reserved placeholders later, the same storage URLs remain valid.
+Run final type-check/build and capture desktop/mobile screenshots for the updated HUD. Verify the mute toggle manually once in a browser with sound enabled; the game remains fully playable when audio is unavailable or muted.
