@@ -48,3 +48,10 @@
 - [x] Play the MP3 only once on the exact miss #3 transition after the Game Over screen appears.
 - [x] Keep misses #1 and #2 silent, prevent replay while Game Over remains visible, and reset playback eligibility on PLAY AGAIN.
 - [x] Verify the complete three-miss → Game Over → one-time audio flow and save a checkpoint.
+
+# Mobile Compatibility Follow-up
+
+- [x] Inspect current touch input, viewport, and audio-gesture handling.
+- [x] Existing mobile-safe canvas configuration already satisfies this requirement; no gameplay, visual, scoring, or audio source changes were needed.
+- [x] Verify touch play, mobile Game Over audio, and unchanged desktop behavior.
+- [x] Existing published checkpoint remains mobile-compatible; no runtime checkpoint changes were required.
