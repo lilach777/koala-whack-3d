@@ -10,7 +10,7 @@ type AudioListener = (muted: boolean) => void;
 
 type AudioContextConstructor = typeof AudioContext;
 
-const MUSIC_URL = "/manus-storage/koala-whack-arcade-loop-32s_8b9e9f36.wav";
+const MUSIC_URL = "/manus-storage/koala-whack-engagement-loop-32s_50bcff19.wav";
 
 function getAudioContextConstructor(): AudioContextConstructor | null {
   if (typeof window === "undefined") return null;

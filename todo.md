@@ -24,3 +24,11 @@
 ## Completion Notes
 
 - [x] Record the final gameplay tuning values and any audio asset/license provenance.
+
+# Audio-Only Follow-up
+
+- [x] Inspect the existing audio manager and confirm the gameplay and visual files remain untouched.
+- [x] Generate or select one original, royalty-safe arcade song/sound layer matching the existing game.
+- [x] Integrate only the audio asset and audio playback path without modifying gameplay behavior.
+- [x] Verify audio loading, looping, mute behavior, and unchanged hit/miss/gameplay flow.
+- [x] Save an audio-only checkpoint and report the result.
